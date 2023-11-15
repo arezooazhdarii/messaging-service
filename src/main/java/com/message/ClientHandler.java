@@ -7,12 +7,20 @@ import java.util.UUID;
 
 public class ClientHandler implements Runnable {
 
+    /**
+     * A list of all clientHandlers.
+     */
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     public String clientUsername;
 
+    /**
+     * Constructs ClientHandler for handling communication with client socket.
+     *
+     * @param socket socket representing client connection.
+     */
     public ClientHandler(Socket socket) {
         try {
             this.socket = socket;
@@ -25,6 +33,9 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Listens for messages from client and broadcasts to other clients.
+     */
     @Override
     public void run() {
         try {
@@ -37,6 +48,11 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Broadcasts a message to clients except sender.
+     *
+     * @param messageToSend message to broadcast.
+     */
     public void broadcastMessage(String messageToSend) {
         if (messageToSend == null) {
             System.out.println("Received null message, not broadcasting");
@@ -56,10 +72,16 @@ public class ClientHandler implements Runnable {
         }
     }
 
+    /**
+     * Removes this clientHandler from list of active clientHandlers.
+     */
     public void removeClientHandler() {
         clientHandlers.remove(this);
     }
 
+    /**
+     * Closes resources associated with clientHandler.
+     */
     private void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         removeClientHandler();
         try {

@@ -11,6 +11,13 @@ public class Client {
     private int messageCount = 0;
     private boolean isInitiator;
 
+    /**
+     * Constructs a new Client.
+     *
+     * @param socket      socket for communication
+     * @param username    the client
+     * @param isInitiator client is the initiator
+     */
     public Client(Socket socket, String username, boolean isInitiator) {
         try {
             this.socket = socket;
@@ -23,6 +30,9 @@ public class Client {
         }
     }
 
+    /**
+     * Starts communication for client
+     */
     public void startCommunication() {
         if (isInitiator) {
             sendInitialMessage();
@@ -30,10 +40,18 @@ public class Client {
         listenForMessage();
     }
 
+    /**
+     * Sends an initial message
+     */
     private void sendInitialMessage() {
         sendMessage("Hello");
     }
 
+    /**
+     * Sends message to server.
+     *
+     * @param message message to sent
+     */
     public void sendMessage(String message) {
         try {
             bufferedWriter.write(message);
@@ -45,6 +63,9 @@ public class Client {
         }
     }
 
+    /**
+     * Listens for messages.
+     */
     public void listenForMessage() {
         new Thread(() -> {
             String messageFromClient;
@@ -64,6 +85,11 @@ public class Client {
         }).start();
     }
 
+    /**
+     * Handles received message.
+     *
+     * @param message message receive from server
+     */
     private void handleMessage(String message) {
         messageCount++;
         if (messageCount <= 10) {
@@ -75,7 +101,10 @@ public class Client {
         }
     }
 
-    private void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
+    /**
+     * Closes all resources (socket).
+     */
+    void closeEverything(Socket socket, BufferedReader bufferedReader, BufferedWriter bufferedWriter) {
         try {
             if (bufferedReader != null)
                 bufferedReader.close();
@@ -86,17 +115,5 @@ public class Client {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        Socket socketInitiator = new Socket("localhost", 8090);
-        Client clientInitiator = new Client(socketInitiator, "initiator", true);
-        clientInitiator.startCommunication();
-
-        Socket socketReceiver = new Socket("localhost", 8090);
-        Client clientReceiver = new Client(socketReceiver, "receiver", false);
-        clientReceiver.startCommunication();
-
     }
 }
