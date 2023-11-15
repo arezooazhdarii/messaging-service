@@ -2,32 +2,27 @@ package com.message;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.Scanner;
 
 public class Client {
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
     private String username;
-
     private int messageCount = 0;
     private boolean isInitiator;
 
-    public Client(Socket socket, String username,boolean isInitiator) {
+    public Client(Socket socket, String username, boolean isInitiator) {
         try {
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = username;
             this.isInitiator = isInitiator;
-            sendMessage(username); // Send the username as the first message after setup
-            if (isInitiator) {
-                sendInitialMessage();
-            }
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
+
     public void startCommunication() {
         if (isInitiator) {
             sendInitialMessage();
@@ -36,28 +31,14 @@ public class Client {
     }
 
     private void sendInitialMessage() {
-        // This method is only called by the initiator to start the communication
         sendMessage("Hello");
     }
 
     public void sendMessage(String message) {
         try {
-            String logMessage = String.format("[%s - %s]: Sending message: %s",
-                    username,
-                    isInitiator ? "Initiator" : "Receiver",
-                    message);
-            System.out.println(logMessage);
-            bufferedWriter.write(username + ": " + message);
+            bufferedWriter.write(message);
             bufferedWriter.newLine();
             bufferedWriter.flush();
-
-//            Scanner scanner = new Scanner(System.in);
-//            while (socket.isConnected()) {
-//                String messageToSend = scanner.nextLine();
-//                bufferedWriter.write("username :" + messageToSend);
-//                bufferedWriter.newLine();
-//                bufferedWriter.flush();
-//            }
 
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
@@ -65,35 +46,29 @@ public class Client {
     }
 
     public void listenForMessage() {
-        new Thread(new Runnable() {
-            public void run() {
-                String messageFromClient;
-                while (socket.isConnected() && (!isInitiator || messageCount < 10)) {
-                    try {
-                        messageFromClient = bufferedReader.readLine();
-                        System.out.println(messageFromClient);
-                        handleMessage(messageFromClient);
-                    } catch (IOException e) {
-                        closeEverything(socket, bufferedReader, bufferedWriter);
-                        break;
-                    }
-                }
-                if (isInitiator) {
+        new Thread(() -> {
+            String messageFromClient;
+            while (socket.isConnected() && (messageCount <= 10)) {
+                try {
+                    messageFromClient = bufferedReader.readLine();
+                    System.out.println(username + " -> " + messageFromClient);
+                    handleMessage(messageFromClient);
+                } catch (IOException e) {
                     closeEverything(socket, bufferedReader, bufferedWriter);
+                    break;
                 }
+            }
+            if (isInitiator) {
+                closeEverything(socket, bufferedReader, bufferedWriter);
             }
         }).start();
     }
 
     private void handleMessage(String message) {
-        // Increment the message count
         messageCount++;
-
-        // Send a new message with this client's message count appended
         if (messageCount <= 10) {
-            sendMessage("Message " + messageCount);
+            sendMessage(message + messageCount);
         } else {
-            // If the initiator has sent and received 10 messages, close the connection
             if (isInitiator) {
                 closeEverything(socket, bufferedReader, bufferedWriter);
             }
@@ -114,34 +89,14 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
-        // First client as initiator
-        Thread initiatorThread = new Thread(() -> {
-            try {
-                String username = "Alice";
-                boolean isInitiator = true;
-                Socket socket = new Socket("localhost", 8090);
-                Client client = new Client(socket, username, isInitiator);
-                client.startCommunication();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
 
-        // Second client as receiver
-        Thread receiverThread = new Thread(() -> {
-            try {
-                String username = "Bob";
-                boolean isInitiator = false;
-                Socket socket = new Socket("localhost", 8090);
-                Client client = new Client(socket, username, isInitiator);
-                client.startCommunication();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        Socket socketInitiator = new Socket("localhost", 8090);
+        Client clientInitiator = new Client(socketInitiator, "initiator", true);
+        clientInitiator.startCommunication();
 
-        // Start both threads
-        initiatorThread.start();
-        receiverThread.start();
+        Socket socketReceiver = new Socket("localhost", 8090);
+        Client clientReceiver = new Client(socketReceiver, "receiver", false);
+        clientReceiver.startCommunication();
+
     }
 }
