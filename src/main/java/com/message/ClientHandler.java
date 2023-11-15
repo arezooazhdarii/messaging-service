@@ -17,9 +17,11 @@ public class ClientHandler implements Runnable {
             this.socket = socket;
             this.bufferedWriter = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            this.clientUsername = bufferedReader.readLine();
+            // This is blocking, move it to the run method where you handle different message types
+//             this.clientUsername = bufferedReader.readLine();
             clientHandlers.add(this);
-            broadcastMessage("SERVER:" + clientUsername + "has entered the chat");
+            // Don't broadcast yet, wait until you have the username
+            // broadcastMessage("SERVER:" + clientUsername + "has entered the chat");
         } catch (IOException e) {
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
@@ -27,23 +29,30 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-        String messageFromClient;
-        while (socket.isConnected()) {
-            try {
+        try {
+            // First message should be the username
+            clientUsername = bufferedReader.readLine();
+            broadcastMessage("SERVER: " + clientUsername + " has entered the chat");
+
+            // Rest of the message handling
+            String messageFromClient;
+            while (socket.isConnected()) {
                 messageFromClient = bufferedReader.readLine();
                 broadcastMessage(messageFromClient);
-            } catch (IOException e) {
-                closeEverything(socket, bufferedReader, bufferedWriter);
-                break;
             }
-
+        } catch (IOException e) {
+            closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
 
     public void broadcastMessage(String messageToSend) {
         for (ClientHandler clientHandler : clientHandlers) {
             try {
-                if (!clientHandler.clientUsername.equals(clientUsername)) {
+                if (!clientHandler.clientUsername.equals(this.clientUsername)) {
+                    // Here, you should send only the new message part, not the entire received message
+                    // For now, let's log the intended message to send
+                    System.out.println("Sending to " + clientHandler.clientUsername + ": " + messageToSend);
+                    // You might want to extract just the relevant part of the message here
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();
