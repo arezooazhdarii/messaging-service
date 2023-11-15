@@ -114,20 +114,34 @@ public class Client {
     }
 
     public static void main(String[] args) throws IOException {
-        String username;
-        boolean isInitiator;
+        // First client as initiator
+        Thread initiatorThread = new Thread(() -> {
+            try {
+                String username = "Alice";
+                boolean isInitiator = true;
+                Socket socket = new Socket("localhost", 8090);
+                Client client = new Client(socket, username, isInitiator);
+                client.startCommunication();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-        if (args.length >= 2) {
-            username = args[0];
-            isInitiator = args[1].equalsIgnoreCase("initiator");
-        } else {
-            // Default values for quick testing
-            username = "bob"; // or "Bob" for the receiver
-            isInitiator = false; // set to false for the receiver
-        }
+        // Second client as receiver
+        Thread receiverThread = new Thread(() -> {
+            try {
+                String username = "Bob";
+                boolean isInitiator = false;
+                Socket socket = new Socket("localhost", 8090);
+                Client client = new Client(socket, username, isInitiator);
+                client.startCommunication();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-        Socket socket = new Socket("localhost", 8090);
-        Client client = new Client(socket, username, isInitiator);
-        client.startCommunication();
+        // Start both threads
+        initiatorThread.start();
+        receiverThread.start();
     }
 }

@@ -32,12 +32,14 @@ public class ClientHandler implements Runnable {
         try {
             // First message should be the username
             clientUsername = bufferedReader.readLine();
+            System.out.println("a new client has connected!" + clientUsername);
+
             broadcastMessage("SERVER: " + clientUsername + " has entered the chat");
 
             // Rest of the message handling
             String messageFromClient;
-            while (socket.isConnected()) {
-                messageFromClient = bufferedReader.readLine();
+            while ((messageFromClient = bufferedReader.readLine()) != null) {
+//                messageFromClient = bufferedReader.readLine();
                 broadcastMessage(messageFromClient);
             }
         } catch (IOException e) {
@@ -46,6 +48,10 @@ public class ClientHandler implements Runnable {
     }
 
     public void broadcastMessage(String messageToSend) {
+        if (messageToSend == null) {
+            System.out.println("Received null message, not broadcasting");
+            return; // Exit the method if the message is null
+        }
         for (ClientHandler clientHandler : clientHandlers) {
             try {
                 if (!clientHandler.clientUsername.equals(this.clientUsername)) {
