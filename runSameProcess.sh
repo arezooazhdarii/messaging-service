@@ -1,3 +1,4 @@
+Copy code
 #!/bin/bash
 
 # Navigate to the project root directory
@@ -8,14 +9,8 @@ mvn clean package
 
 # Check if the compilation was successful
 if [ $? -eq 0 ]; then
-    # Run the server
-    java -cp target/socket-1.0-SNAPSHOT.jar com.message.separate_process.ServerApplication &
-
-    # Give the server some time to start
-    sleep 5
-
-    # Run the client
-    java -cp target/socket-1.0-SNAPSHOT.jar com.message.separate_process.ClientApplication
+    # Run the same-process scenario
+    mvn exec:java -Dexec.mainClass="com.message.same_process.MainApplication"
 else
     echo "Build failed, exiting."
 fi

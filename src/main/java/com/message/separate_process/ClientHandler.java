@@ -46,7 +46,6 @@ public class ClientHandler implements Runnable {
         try {
             String messageFromClient;
             while ((messageFromClient = bufferedReader.readLine()) != null) {
-                logger.info("Received message: " + messageFromClient + " from " + clientUsername);
                 broadcastMessage(messageFromClient);
             }
         } catch (IOException e) {
@@ -63,7 +62,6 @@ public class ClientHandler implements Runnable {
     public void broadcastMessage(String messageToSend) {
         if (messageToSend == null) {
             logger.warning("Received null message, not broadcasting");
-            System.out.println("Received null message, not broadcasting");
             return;
         }
         for (ClientHandler clientHandler : clientHandlers) {

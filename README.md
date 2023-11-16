@@ -1,4 +1,4 @@
-# Java Socket Messaging Application
+# Java Messaging Application
 
 ## Overview
 

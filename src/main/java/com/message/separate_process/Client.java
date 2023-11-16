@@ -29,7 +29,6 @@ public class Client {
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = username;
             this.isInitiator = isInitiator;
-            logger.info("Client initialized: " + username);
         } catch (IOException e) {
             logger.severe("Error setting up client: " + e.getMessage());
             closeEverything(socket, bufferedReader, bufferedWriter);
