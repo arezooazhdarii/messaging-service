@@ -1,11 +1,14 @@
-package com.message;
+package com.message.separate_process;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 public class ClientHandler implements Runnable {
+
+    private static final Logger logger = Logger.getLogger(ClientHandler.class.getName());
 
     /**
      * A list of all clientHandlers.
@@ -28,7 +31,9 @@ public class ClientHandler implements Runnable {
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.clientUsername = UUID.randomUUID().toString();
             clientHandlers.add(this);
+            logger.info("New client connected: " + clientUsername);
         } catch (IOException e) {
+            logger.severe("Error setting up client handler: " + e.getMessage());
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
@@ -41,9 +46,11 @@ public class ClientHandler implements Runnable {
         try {
             String messageFromClient;
             while ((messageFromClient = bufferedReader.readLine()) != null) {
+                logger.info("Received message: " + messageFromClient + " from " + clientUsername);
                 broadcastMessage(messageFromClient);
             }
         } catch (IOException e) {
+            logger.warning("Error in client handler run method: " + e.getMessage());
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }
@@ -55,13 +62,14 @@ public class ClientHandler implements Runnable {
      */
     public void broadcastMessage(String messageToSend) {
         if (messageToSend == null) {
+            logger.warning("Received null message, not broadcasting");
             System.out.println("Received null message, not broadcasting");
             return;
         }
         for (ClientHandler clientHandler : clientHandlers) {
             try {
                 if (!clientHandler.clientUsername.equals(this.clientUsername)) {
-                    System.out.println("Sending to " + clientHandler.clientUsername + ": " + messageToSend);
+                    System.out.println("SERVER:Sending to " + clientHandler.clientUsername + ": " + messageToSend);
                     clientHandler.bufferedWriter.write(messageToSend);
                     clientHandler.bufferedWriter.newLine();
                     clientHandler.bufferedWriter.flush();

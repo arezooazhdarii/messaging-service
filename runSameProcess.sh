@@ -9,13 +9,13 @@ mvn clean package
 # Check if the compilation was successful
 if [ $? -eq 0 ]; then
     # Run the server
-    java -cp target/socket-1.0-SNAPSHOT.jar com.message.ServerApplication &
+    java -cp target/socket-1.0-SNAPSHOT.jar com.message.separate_process.ServerApplication &
 
     # Give the server some time to start
     sleep 5
 
     # Run the client
-    java -cp target/socket-1.0-SNAPSHOT.jar com.message.ClientApplication
+    java -cp target/socket-1.0-SNAPSHOT.jar com.message.separate_process.ClientApplication
 else
     echo "Build failed, exiting."
 fi

@@ -1,4 +1,4 @@
-package com.message;
+package com.message.separate_process;
 
 import java.io.IOException;
 import java.net.ServerSocket;

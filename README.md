@@ -1,21 +1,40 @@
 # Java Socket Messaging Application
 
-This project is a Java-based messaging application using socket programming. It consists of a `Server` class that handles incoming client connections, a `Client` class that initiates and handles communication, and a `ClientHandler` class that manages client interactions.
+## Overview
+
+This Java Socket Messaging Application demonstrates two communication scenarios for players: same-process and separate-process. Players exchange messages, and each player responds by appending a message count to the received message. The application can gracefully terminate after the initiator sends and receives 10 messages.
 
 ## Project Structure
 
-- `src/main/java/com/message/ServerApplication.java`: The server program that waits for clients to connect.
-- `src/main/java/com/message/ClientApplication.java`: The client program that connects to the server and communicates messages.
-- `src/main/java/com/message/ClientHandler.java`: Handles client communication after connecting to the server.
-- `pom.xml`: Maven build configuration file.
-- `runApplication.sh`: Shell script to compile and run the server and client programs.
+The project structure is organized into two main packages, one for each communication scenario.
+
+### Same-Process Communication
+
+- `src/main/java/com/message/same_process/`:
+   - `MainApplication.java`: Entry point for the same-process communication scenario.
+   - `Initiator.java`: Represents the initiating player, responsible for starting communication.
+   - `Receiver.java`: Represents the receiving player, which responds to messages.
+   - `Player.java`: Abstract class that encapsulates common player functionality.
+
+### Separate-Process Communication
+
+- `src/main/java/com/message/separate_process/`:
+   - `ServerApplication.java`: Entry point for the server in the separate-process scenario.
+   - `ClientApplication.java`: Entry point for the client in the separate-process scenario.
+   - `ClientHandler.java`: Manages client communication on the server side.
+   - `Server.java`: Handles server functionality, such as accepting client connections.
+
+- `pom.xml`: Contains Maven build configurations.
+- `runApplication.sh`: Shell script to compile and run both communication scenarios.
 
 ## Prerequisites
 
-- Java JDK 11 or higher
-- Maven 3.6.0 or higher
+Before running the application, ensure you have the following prerequisites installed:
 
-## how to run
+- Java JDK 11 or higher.
+- Maven 3.6.0 or higher.
+
+## How to run
 
 Follow these steps to set up and run the application:
 
@@ -27,13 +46,29 @@ To run test cases of the project execute the following command:
   mvn test
 ```
 
-
 ### 3. Run the Shell Script
 
-Execute the `runApplication.sh` script to compile and run the server and client.
+#### 3.1 Same-Process Scenario
+To start the same-process communication scenario, execute the following command:
 
 ```sh
-./runApplication.sh
+./runSameProcess.sh
+```
+This command initializes both the initiator and receiver within the same Java process, allowing them to communicate directly.
+
+
+#### 3.2 Separate-Process Scenario
+To run the separate-process communication scenario, follow these steps:
+
+Make the runSeparateProcess.sh script executable:
+```sh
+chmod +x runSeparateProcess.sh
+```
+
+Execute the script:
+
+```sh
+./runSeparateProcess.sh
 ```
 
 The script will perform the following actions:
@@ -42,13 +77,12 @@ The script will perform the following actions:
 - Start the server in the background.
 - Start the client and connect it to the server.
 
-### 4. Interacting with the Application
+## Interaction
+In both communication scenarios:
 
-The client will automatically send an initial message to the server. The server will respond, and the client will continue the conversation until the message count reaches 10.
-
-## Documentation
-
-Each class within the project is documented with JavaDoc comments to explain its purpose and methods. Further documentation can be found inline with the code, describing key decisions and functionality.
+- The initiator, designated as the starting player, sends an initial message to the receiver.
+- The receiver responds to received messages by appending a message count.
+- This message exchange continues until the initiator has sent and received 10 messages, serving as the stop condition.
 
 ## Additional Notes
 

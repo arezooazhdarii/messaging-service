@@ -1,9 +1,13 @@
-package com.message;
+package com.message.separate_process;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class Client {
+
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
+
     private Socket socket;
     private BufferedReader bufferedReader;
     private BufferedWriter bufferedWriter;
@@ -25,7 +29,9 @@ public class Client {
             this.bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             this.username = username;
             this.isInitiator = isInitiator;
+            logger.info("Client initialized: " + username);
         } catch (IOException e) {
+            logger.severe("Error setting up client: " + e.getMessage());
             closeEverything(socket, bufferedReader, bufferedWriter);
         }
     }

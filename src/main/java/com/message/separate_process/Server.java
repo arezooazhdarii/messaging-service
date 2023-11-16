@@ -1,10 +1,12 @@
-package com.message;
+package com.message.separate_process;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class Server {
+    private static final Logger logger = Logger.getLogger(Server.class.getName());
     private final ServerSocket serverSocket;
 
     /**
@@ -24,11 +26,13 @@ public class Server {
         try {
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
+                logger.info("Client connected: " + socket.getInetAddress());
                 ClientHandler clientHandler = new ClientHandler(socket);
                 Thread thread = new Thread(clientHandler);
                 thread.start();
             }
         } catch (IOException e) {
+            logger.severe("Error in server: " + e.getMessage());
             e.printStackTrace();
         }
     }

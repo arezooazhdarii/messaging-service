@@ -1,5 +1,6 @@
-package com.message;
+package com.message.separate_process;
 
+import com.message.separate_process.Client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
