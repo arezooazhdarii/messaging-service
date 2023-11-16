@@ -14,7 +14,9 @@ The project structure is organized into two main packages, one for each communic
    - `MainApplication.java`: Entry point for the same-process communication scenario.
    - `Initiator.java`: Represents the initiating player, responsible for starting communication.
    - `Receiver.java`: Represents the receiving player, which responds to messages.
-   - `Player.java`: Abstract class that encapsulates common player functionality.
+   - `MessageService.java`: Abstract class that encapsulates common player functionality.
+   - `runSameProcess.sh`: Shell script to compile and run communication scenarios.
+
 
 ### Separate-Process Communication
 
@@ -25,7 +27,7 @@ The project structure is organized into two main packages, one for each communic
    - `Server.java`: Handles server functionality, such as accepting client connections.
 
 - `pom.xml`: Contains Maven build configurations.
-- `runApplication.sh`: Shell script to compile and run both communication scenarios.
+- `runSeparateProcess.sh`: Shell script to compile and run both communication scenarios.
 
 ## Prerequisites
 
