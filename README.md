@@ -15,7 +15,7 @@ The project structure is organized into two main packages, one for each communic
    - `Initiator.java`: Represents the initiating player, responsible for starting communication.
    - `Receiver.java`: Represents the receiving player, which responds to messages.
    - `MessageService.java`: Abstract class that encapsulates common player functionality.
-   - `runSameProcess.sh`: Shell script to compile and run communication scenarios.
+- `runSameProcess.sh`: Shell script to compile and run communication scenarios.
 
 
 ### Separate-Process Communication
